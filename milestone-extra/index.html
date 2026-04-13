@@ -1,0 +1,191 @@
+<!-- 
+
+ 📌 Milestone extra : Utilizzare l'API per Creare Card
+ 
+ Utilizza l'API:
+http://localhost:3333/animals?search=[animalName]
+per effettuare una ricerca dell'animale basata sul contenuto dell'input: 
+Sostituisci [animalName] con il valore inserito dall'utente.
+Assicurati di gestire lo stato di caricamento mentre l'API è in fase di risposta (mostra un messaggio come "Caricamento...").
+
+1. Dal primo risultato restituito dall'array (se presente), crea un oggetto che abbia queste proprietà:
+   - name: Il nome dell'animale.
+   - description: La descrizione dell'animale (o un messaggio predefinito come "Descrizione non disponibile" se manca).
+   - image: L'immagine dell'animale (usa un'immagine di default se non è disponibile).
+
+2. Aggiungi l'oggetto alla lista degli animali e visualizzalo come una card, con:
+   - Titolo: Il nome dell'animale.
+   - Immagine (se presente).
+   - Descrizione.
+
+3. Gestione degli errori:
+   - Se la ricerca non restituisce risultati, informa l'utente con un messaggio di errore. (es.: "Nessun animale trovato")
+   - Mostra un messaggio in caso di problemi di rete o altri errori. (es.: "Errore durante la ricerca dell'animale")
+ -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I miei animali Preferiti</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel aiuta a scrivere la sintassi jsx direttamente nell'html-->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="../style.css">
+
+
+    <script type="text/babel">
+
+        const { useState } = React;
+        function Modal({
+            title,
+            content,
+            show = false,
+            onClose = () => { },
+            onConfirm = () => { }
+        }) {
+            return show && ReactDOM.createPortal(
+                <div className="modal-container">
+                    <div className="modal">
+                        <h2>{title}</h2>
+                        <p>{content}</p>
+                        <div>
+                            <button onClick={onClose}>Annulla</button>
+                            <button onClick={onConfirm} >Aggiungi</button>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )
+        }
+
+        const ListaAnimali = () => {
+
+            const [show, setShow] = useState(false);
+
+            //array inizialmente vuoto 
+            const [animals, setAnimals] = useState([]);
+
+            //mi serve per l'input testuale
+            const [newAnimal, setNewAnimal] = useState("");
+
+            const [isLoading, setIsLoading] = useState(false);
+
+            //funzione per aggiungere gli animali 
+            const addAnimal = async () => {
+
+                if (!newAnimal.trim()) return;
+                setIsLoading(true);
+
+                try {
+                    const response = await fetch(`http://localhost:3333/animals?search=${newAnimal}`);
+                    const data = await response.json();
+                    const animalData = data[0]; 
+
+                    if(!animalData) {
+                        throw new Error("Animale non trovato");
+                    }
+                    const animal = {
+                        name: animalData.name || "Nome non trovato",
+                        description : animalData.description || "Descrizione non trovata",
+                        image : animalData.image || "Immagine non trovata"
+                    }
+                    setAnimals([...animals, animal]);
+                    console.log(animalData); 
+
+                } catch (err) {
+                    console.error(err);
+
+                }
+                finally {
+                    setIsLoading(false); 
+                    setNewAnimal("");
+                    setShow(false); 
+                }
+
+            }
+
+            return (
+                <>
+                    <button onClick={() => setShow(true)} >Aggiungi animale</button>
+                    <section>
+
+                        <Modal
+                            title="Cerca un animale da aggiungere"
+                            content={
+                                <input
+                                    type="text"
+                                    value={newAnimal}
+                                    onChange={(e) => setNewAnimal(e.target.value)}>
+                                </input>
+                            }
+                            show={show}
+                            onClose={() => setShow(false)}
+                            onConfirm={addAnimal} />
+                    </section>
+
+
+                    <details>
+                        <summary>Animali</summary>
+                        <div>
+                            {
+                                animals.map((animal, index) => (
+                                  <div key={index}  className="card" >
+                                        <div>
+                                            <h3>{animal.name}</h3>
+                                            <p>{animal.description}</p>
+                                            </div>
+
+                                            {animal.image && 
+                                                <figure>
+                                                    <p>{animal.image}</p>
+                                                    <img src={animal.image} alt={animal.name}/>
+                                                    </figure>
+                                            }
+                                            </div>
+                                ))
+                            }
+                        </div>
+                    </details>
+                </>
+
+            )
+        }
+    </script>
+
+
+    <!--renderizzo il componente nel div presente nel body dentro l'elemento html -->
+    <script type="text/babel">
+
+        const { createRoot } = ReactDOM;
+        const listaAnimali = document.querySelector('.lista-animali');
+        const root = createRoot(listaAnimali);
+        root.render(<ListaAnimali />)
+
+    </script>
+
+
+</head>
+
+
+
+<body>
+    <header>
+        <h1>I miei animali Preferiti</h1>
+    </header>
+    <main>
+        <figure>
+            <img src="https://picsum.photos/400/300" alt="Immagine Casuale">
+        </figure>
+        <div class="lista-animali">
+
+        </div>
+    </main>
+    <footer>
+        <p>Creato con amore da... un collega sbadato! 🐾</p>
+    </footer>
+</body>
+
+</html>
