@@ -25,12 +25,12 @@
 
     <script type="text/babel">
 
-        const {useState} = React; 
+        const { useState } = React;
 
         const ListaAnimali = () => {
 
             //array inizialmente vuoto 
-            const [animals,setAnimals] = useState([]);
+            const [animals, setAnimals] = useState([]);
 
             //array da cui pescare gli animali casualmente
             const animalsChoices = ["Cane", "Gatto", "Pappagallo", "Cavallo", "Panda"];
@@ -40,28 +40,28 @@
 
                 //genero un indice randomico dall'array animalChoises
                 const randomIndex = Math.floor(Math.random() * animalsChoices.length);
-                console.log("indice : ",randomIndex);
+                console.log("indice : ", randomIndex);
                 //uso l'indice per prendere un animale dall'array predefinito
                 const animaleCasuale = animalsChoices[randomIndex];
-                console.log(`Animale all'indice  ${randomIndex} : ${animaleCasuale}`); 
+                console.log(`Animale all'indice  ${randomIndex} : ${animaleCasuale}`);
 
                 //aggiungo il nuovo animale alla lista
-                setAnimals([...animals,animaleCasuale]);
+                setAnimals([...animals, animaleCasuale]);
             }
 
             return (
-<>
-            <button onClick={aggiungiAnimale} >Aggiungi animale</button>
-                <details>
-                    <summary>Animali</summary>
-                    <ul>
-                        {
-                            animals.map((animal, index) => {
-                                return <li key={index}>{animal}</li>
-                            })
-                        }
-                    </ul>
-                </details>
+                <>
+                    <button onClick={aggiungiAnimale} >Aggiungi animale</button>
+                    <details>
+                        <summary>Animali</summary>
+                        <ul>
+                            {
+                                animals.map((animal, index) => {
+                                    return <li key={index}>{animal}</li>
+                                })
+                            }
+                        </ul>
+                    </details>
                 </>
 
             )
@@ -69,7 +69,7 @@
     </script>
 
 
-<!--renderizzo il componente nel div presente nel body dentro l'elemento html -->
+    <!--renderizzo il componente nel div presente nel body dentro l'elemento html -->
     <script type="text/babel">
 
         const { createRoot } = ReactDOM;
