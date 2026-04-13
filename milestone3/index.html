@@ -1,0 +1,145 @@
+<!-- 
+
+ 📌 Milestone 3: Usare una Modale per Aggiungere Animali
+1. Espandilo affinché:
+   - La vecchia prop content può essere usata per passare un componente qualsiasi.
+   - Un nuovo div in fondo alla modale contiene il bottone Annulla e un nuovo bottone Conferma.
+   - Una nuova prop onConfirm si aspetta una funzione per gestire l’azione di conferma.
+
+2. Sostituisci l’aggiunta casuale dell’animale con una modale interattiva:
+   - Cliccando il bottone "Aggiungi Animale," si apre una modale.
+   - La modale include un input di testo (passato al prop content) per inserire il nome di un animale.
+   - Conferma: Aggiunge l’animale alla lista e chiude la modale.
+   - Annulla: Chiude la modale senza modificare la lista.
+
+ -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I miei animali Preferiti</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel aiuta a scrivere la sintassi jsx direttamente nell'html-->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="../style.css">
+
+
+    <script type="text/babel">
+
+        const { useState } = React;
+        function Modal({
+            title,
+            content,
+            show = false,
+            onClose = () => { },
+            onConfirm = () => { }
+        }) {
+            return show && ReactDOM.createPortal(
+                <div className="modal-container">
+                    <div className="modal">
+                        <h2>{title}</h2>
+                        <p>{content}</p>
+                        <div>
+                        <button onClick={onClose}>Annulla</button>
+                        <button onClick={onConfirm} >Aggiungi</button>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )
+        }
+
+        const ListaAnimali = () => {
+
+            const [show, setShow] = useState(false);
+
+            //array inizialmente vuoto 
+            const [animals, setAnimals] = useState([]);
+
+            //mi serve per l'input testuale
+            const [newAnimal, setNewAnimal] = useState("");
+
+            //funzione per aggiungere gli animali 
+            const addAnimal = () => {
+
+                if(!newAnimal) return ; 
+
+                //aggiungo il nuovo animale alla lista
+                setAnimals([...animals, newAnimal]);
+                setNewAnimal("");
+                setShow(false);
+            }
+
+            return (
+                <>
+                    <button onClick={() => setShow(true)} >Aggiungi animale</button>
+                    <section>
+                        
+                        <Modal
+                            title="Aggiungi un animale"
+                            content={
+                                <input
+                                    type="text"
+                                    value={newAnimal}
+                                    onChange={(e) => setNewAnimal(e.target.value)}>
+                                </input>
+                            }
+                            show={show}
+                            onClose={() => setShow(false)}
+                            onConfirm={addAnimal} />
+                    </section>
+
+
+                    <details>
+                        <summary>Animali</summary>
+                        <ul>
+                            {
+                                animals.map((animal, index) => {
+                                    return <li key={index}>{animal}</li>
+                                })
+                            }
+                        </ul>
+                    </details>
+                </>
+
+            )
+        }
+    </script>
+
+
+    <!--renderizzo il componente nel div presente nel body dentro l'elemento html -->
+    <script type="text/babel">
+
+        const { createRoot } = ReactDOM;
+        const listaAnimali = document.querySelector('.lista-animali');
+        const root = createRoot(listaAnimali);
+        root.render(<ListaAnimali />)
+
+    </script>
+
+
+</head>
+
+
+
+<body>
+    <header>
+        <h1>I miei animali Preferiti</h1>
+    </header>
+    <main>
+        <figure>
+            <img src="https://picsum.photos/400/300" alt="Immagine Casuale">
+        </figure>
+        <div class="lista-animali">
+
+        </div>
+    </main>
+    <footer>
+        <p>Creato con amore da... un collega sbadato! 🐾</p>
+    </footer>
+</body>
+
+</html>
